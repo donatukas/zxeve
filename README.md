@@ -99,7 +99,7 @@ roms\                        ZX Spectrum ROM'ai
 zxrtos\                      ZXRTOS 1.0.0: ROM ir SD atvaizdas
 fonts\                       šriftas (Roboto)
 LICENSES\                    trečiųjų šalių licencijos
-CHANGELOG.txt                pakeitimai
+CHANGES.md                   kas naujo
 ```
 
 ## Licencijos
