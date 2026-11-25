@@ -1,0 +1,352 @@
+zxeve – pakeitimų žurnalas
+==========================
+
+2026-11-25  0.4.4 – „Apie“ šriftas šiek tiek didesnis
+--------------------------------------------------------------------------
+
+  * Donatas: „šiek tiek padidink šriftą - info Apie“. Tarpinis šriftas
+    FONT_MID 17 px (ui.font_mid, text_mid()) - „Apie“ lentelė ir
+    paantraštė (buvo 16 px); eilutės 26 px, langas 640 px.
+
+2026-11-25  0.4.3 – kompiliatorius „Apie“ lange, kompaktiškas „Apie“
+--------------------------------------------------------------------------
+
+  * Donatas: „pridėk, koks kompiliatorius build'ą darė“, „sumažink, kad
+    būtų kompaktiškesnis“ (apie „Apie“ langą).
+  * Makefile: ZXEVE_CC = „GCC <versija> (<-dumpfullversion>), <taikinys>“ -
+    Debian MinGW gcc -dumpfullversion grąžina tik „14-win32“, todėl pilna
+    versija imama iš paketo gcc-mingw-w64-x86-64-<gijų modelis>
+    (dpkg-query; nėra - kaip yra); ZXEVE_BUILD_HOST = uname -sr. main.o ir
+    ui.o priklauso nuo Makefile (.DEFAULT_GOAL := all).
+  * „Apie“: naujos eilutės „Sukompiliuota“ (data, laikas, statymo sistema) ir
+    „Kompiliatorius“ (GCC 14.2.0 (14-win32), x86_64-w64-mingw32 · MinGW-w64
+    12.0.0); langas 600 px, eilutės 24 px mažu šriftu, piktogramos 16 px
+    (clock.svg iš grotuvo - make icons).
+  * Starto pėdsakas (zxeve-start.log): „sukompiliuota <data>: <GCC>,
+    MinGW-w64 <v> (<statymo sistema>)“.
+
+2026-11-25  0.4.2 – zxeve-debug.exe su nauja sąsaja
+--------------------------------------------------------------------------
+
+  * Donatas: „debug variante liko senas dizainas“. Makefile darė
+    bin/zxeve-debug.exe tik „make debug“ taikiniu, todėl po „make“ jis
+    likdavo senas (20:27, iki 0.3.0) - ir dist pakete. Dabar „all“ daro
+    abu .exe, o zxeve-debug.exe priklauso ir nuo visų import bibliotekų
+    (raylib, libconfuse, zlog, crashpad) - perkompiliuojamas kartu.
+
+2026-11-25  0.4.1 – „Apie“: visos versijos
+--------------------------------------------------------------------------
+
+  * Donatas: „Pagalba -> Apie - versijas pridėk dar“.
+  * „Apie“ langas (720 px) - lentelė „Versijos“ su piktogramomis: zxeve
+    (versija, kompiliavimo data ir laikas), libzxemu (zxe_version),
+    libspectrum (zxe_libspectrum_version), BT8XXEMU, raylib
+    (RAYLIB_VERSION), zlog (zlog_version), libConfuse (confuse_version),
+    Crashpad (crashpad_c_version), Sistema (Windows versija).
+  * BT8XXEMU versija - iš libzxemu žurnalo pranešimo („bt8xxemu: ... (API
+    N), FT813“; emu.c on_zxe_log -> emu.bt_version); be BT8XXEMU -
+    „neįkeltas (builtin)“.
+  * winutil.c win_os_version(): RtlGetVersion iš ntdll.dll (tikra versija,
+    ne suderinamumo režimo), build >= 22000 - „Windows 11“.
+  * Patikrinta per wine (--show-about): visos eilutės užpildytos.
+
+2026-11-25  0.4.0 – starto efektas
+--------------------------------------------------------------------------
+
+  * Donatas: „kadangi čia grafikos lib naudojama - pridėk starte kokį
+    starto efektą“.
+  * ui.c intro_run(), ~2,2 s: ZX juostos krovimo juostos per visą langą
+    (pilotas - raudona / žydra, duomenys - mėlyna / geltona, kaip LOAD),
+    juostos traukiasi į rėmelį ir atsiveria „ekranas“, iš kairės įslenka
+    ZX vaivorykštė, išryškėja „zxeve“ (Segoe UI Bold 64 px, nėra - Roboto),
+    paantraštė ir versija (su libzxemu versija), pabaigoje viskas sklandžiai
+    išnyksta. Bet kuris klavišas ar pelės mygtukas - praleisti; emuliacija
+    tuo metu stovi.
+  * Nustatymas intro (numatyta true), meniu Rodinys -> Starto efektas.
+    Testų režime efekto nėra; --intro-shot SEK - efekto nuotrauka
+    (patikrinta per wine: 0,3 / 1,0 / 1,6 / 2,0 s).
+
+2026-11-25  0.3.9 – klaidos langas zxeve stiliumi
+--------------------------------------------------------------------------
+
+  * Donatas: „kai išmeta klaidos langą (jei nėra ROM), jis baltas - galima
+    padaryti tokio pat dizaino“.
+  * ui.c error_box(): klaida rodoma pačiame lange - tamsi kortelė su
+    gintariniu rėmeliu, įspėjimo piktograma (48 px), antraštė „Klaida“,
+    tekstas laužomas žodžiais, mygtukas „Gerai“ (Enter / Esc). Vietoj
+    balto Windows MessageBox (win_error) - ui_error() ir starto klaidos
+    (main.c: emu_open / emu_load) per ui_post_error() - parodomos, kai
+    langas atsidaro. Testų režime - kaip iki šiol, tik žurnalas.
+  * Uždarius „Apie“ ar klaidos langą Enter / Esc nebepatenka į Spectrum
+    (key_block - kol klavišai atleisti) ir neišeina iš viso ekrano.
+  * ui_modal() - visi valdikliai išjungti, kol atidarytas „Apie“ ar
+    klaidos langas. Testų režimui: --show-error TEKSTAS.
+
+2026-11-25  0.3.8 – Pentagon 128 ROM
+--------------------------------------------------------------------------
+
+  * Donatas: „įdėk Pentagono ROM“. Pasirinkus Pentagon 128 mašina
+    nesikurdavo: libzxemu ieško roms/128p-0.rom, 128p-1.rom (ir trdos.rom),
+    o jų nebuvo (Fuse jų irgi neplatina - „supply your own copies“).
+  * Makefile: bin/roms/128p-0.rom ir 128p-1.rom - Sinclair 128K ROM kopijos
+    (Amstrad leidžia platinti; Pentagon 128 naudoja 128K ROM, libzxemu
+    testai irgi). trdos.rom (TR-DOS, (c) Technology Research) laisvai
+    platinti negalima - jei padėtas res/roms/trdos.rom (savo kopija, ne
+    git), nukopijuojamas į bin/roms/; kitaip Pentagon veikia be Beta 128
+    (TR-DOS diskų), žurnale įspėjimas. Patikrinta per wine: „mašina:
+    Pentagon 128, kadras 71680 T“.
+
+2026-11-25  0.3.7 – juosta akimirksniu, modelio perjungimas
+--------------------------------------------------------------------------
+
+  * Donato pastabos: „tap failą įjungus kraunasi kaip juosta, reikia
+    laukti - būtų režimas, kad užkrautų akimirksniu“ (bokstas.tap,
+    sachmatai.tap), „negaliu perjungti ZX mašinos - visada ZXRTOS“.
+  * Greitas juostos įkėlimas (nustatymas tape_fast, numatyta true; meniu
+    Mašina -> Greitas juostos įkėlimas): emu_tape_fast() įjungia libzxemu
+    0.21.0 gaudykles - ROM ir savų įkroviklių (ROM LD-BYTES kopija RAM'e,
+    kaip bokšto ir šachmatų src/loader.asm) blokai įkeliami iš karto - ir
+    kraštų laukimo pagreitinimą; be to, kol juosta groja ar renkamas LOAD
+    (tape_turbo()), emuliuojama kiek telpa (~15 ms kadre, kaip Fuse
+    „accelerate loaders“), būsenos juostoje „juosta kraunama greitai“,
+    žurnale - per kiek įkelta. Patikrinta per wine: bokstas.tap - meniu
+    per 0,6 s (anksčiau ~168 s). false - realiu laiku, kaip tikra juosta.
+  * Modelio pasirinkimas meniu dabar - su to modelio standartiniu ROM:
+    rom_file (ZXRTOS) ir ZXRTOS SD atjungiami (anksčiau perkūrus mašiną
+    vėl būdavo įkeliamas rom_file). Mašina -> Standartinis ROM taip pat
+    atjungia zxrtos-sd.img.
+  * Įrankių juostos mygtukas „ZXRTOS“ - jungiklis (Donatas: „tą mygtuką
+    ZXRTOS išjungus - kad persijungtų į ZX režimą“): įjungtas ZXRTOS
+    paspaudus -> standartinis ROM be ZXRTOS SD, kitaip -> ZXRTOS.
+  * make dist (Donatas: „padaryk, kad dist būtų“): dist/zxeve-<v>.tar.gz
+    (šaltiniai, be temp/ ir žurnalų) ir dist/zxeve-<v>-win64.zip -
+    paruoštas Windows paketas (visas bin/ be žurnalų ir crashdb/,
+    nustatymai švarūs iš conf/, README, CHANGELOG); šalia -
+    zxeve-<v>-sym.exe „make crash“ nagrinėjimui.
+  * Reikia libzxemu >= 0.21.0 (make deps tikrina zxe_tape_set_accel).
+
+2026-11-25  0.3.6 – garsas išjungiamas iš karto, Esc - iš viso ekrano
+--------------------------------------------------------------------------
+
+  * Donatas: „startuojant ZXRTOS garso išjungimas nesireguliuoja - visada
+    veikia“, „iš full screen režimo išeiti padaryk Esc“.
+  * Garsas: Mašina -> Garsas anksčiau tik keitė nustatymą („įsigalios
+    paleidus iš naujo“), todėl ZXRTOS AUTORUN.LUA AY muzika grojo toliau.
+    Dabar on_audio() išjungus garsą atiduoda tylą iš karto (žiedinis
+    buferis vis tiek skaitomas - jis diktuoja tempą); įjungus, kai
+    programa paleista be garso, atidaromi buferis (emu_audio_on()) ir
+    įrenginys. emu.audio_dev - buferis laikomas atidarytas ir perkūrus
+    mašiną (kitaip be jo tempas būtų „turbo“). Mygtukas įrankių juostoje
+    (volume-2 / volume-x piktogramos iš grotuvo) ir klavišas F7.
+  * Esc viso ekrano režime (bet kuriame - F9, F10, F11) - atgal į langą ir
+    Spectrum'ui neperduodamas; įprastame lange Esc - Spectrum EDIT, kaip
+    iki šiol. Užuomina: „Esc - atgal į langą“.
+
+2026-11-25  0.3.5 – atskirai ZX arba FT81x per visą ekraną
+--------------------------------------------------------------------------
+
+  * Donatas: „FT81x EVE langas, ypač užrašai dešiniame krašte, kur
+    rezoliucija rašoma, neryškūs“; „kad galėtų full screen konkrečiai ZX
+    Spectrum langą arba FT81x EVE ... pridėk, kad galėtų ir atskirai“.
+  * Viso ekrano režimai (enum fs_mode): F11 - visa programa (kaip iki
+    šiol), F9 - tik ZX Spectrum (sveikais kartais), F10 - tik FT81x EVE
+    (kiek telpa, proporcijos išlaikomos); juodas fonas, vaizdas centre,
+    pirmas 3 s užuomina „F9 / F10 / F11 - atgal“. Tas pats klavišas -
+    atgal į langą, kitas - perjungia. Meniu Rodinys - trys punktai;
+    kortelių antraštėse - mygtukas „per visą ekraną“ (maximize). FT81x
+    lietimas pele veikia ir per visą ekraną.
+  * Antraštės informacija (raiška, mastelis) - įprastu šriftu ir šviesesnė
+    (mažasis šriftas ten buvo neryškus).
+  * apply_filters(): ZX ir FT81x tekstūroms sveikas mastelis - POINT
+    (taškas į tašką), trupmeninis - BILINEAR (kitaip taškai nevienodo
+    pločio, vaizdas „laiptuotas“).
+  * Testų režimui: --show-full 1..3.
+
+2026-11-25  0.3.4 – ryškesnis tekstas ir piktogramos
+--------------------------------------------------------------------------
+
+  * Donatas: „dar išeitų ryškumą padidinti“.
+  * Šriftas: load_crisp() - kaip raylib LoadFontEx() (LoadFontData ->
+    GenImageFontAtlas -> tekstūra), bet atlaso alfai pritaikoma kreivė
+    alfa^0.62 (FONT_GAMMA): stb_truetype padengimas tiesinis, ir šviesios
+    raidės tamsiame fone atrodė plonos ir blyškios; dabar sodresnės,
+    panašiai kaip ClearType kontrastas.
+  * Piktogramos: ta pati kreivė tools/mk-icons.py (GAMMA = 0.62),
+    src/icons.c pergeneruotas („make icons“).
+  * Šviesesnės spalvos: tekstas #F4F6F9 (buvo #E8EAEE), pilkas #BCC2CC
+    (buvo #9AA1AD), blankus #808895 (buvo #5E6572).
+
+2026-11-25  0.3.3 – didesnis šriftas
+--------------------------------------------------------------------------
+
+  * Donatas: „jau geriau, šriftą padidink visur, tas pats ir lange Apie“.
+  * Šriftas 16 -> 19 px, mažasis 13 -> 16 px; pagal jį padidinti meniu
+    juosta (32), įrankių juosta (50, mygtukai 38), kortelių antraštės
+    (34), būsenos juosta (30), meniu punktai (ITEM_H 36, piktogramos 20
+    px), patarimai (TIP_H 30). „Apie“ langas 620 x 360, visos eilutės
+    įprastu (ne mažu) šriftu, piktogramos 20 px.
+  * Testų režimui: --show-menu 1..5 ir --show-about - ekrano nuotraukoje
+    atidarytas meniu ar „Apie“ (sąsajai tikrinti per wine).
+
+2026-11-25  0.3.2 – ryškus tekstas ir piktogramos
+--------------------------------------------------------------------------
+
+  * Donatas (nuotrauka greta dx): „meniu gražus, bet lyg be fokuso“,
+    „taip yra, kai naudoji libraylib“, „dx irgi tas pats, kai gaublį
+    rodo“. Priežastis - ne Windows mastelis (GLFW procesą pažymi
+    PER_MONITOR_AWARE_V2, langas netempiamas), o piešimas: šriftas buvo
+    rasterizuojamas dvigubo dydžio ir mažinamas su mipmap'ais, piktogramos -
+    64 px, mažinamos iki 14-20 px, o koordinatės - pusiniai taškai.
+    dx pagrindinis langas piešia GDI+ su ClearType GridFit - todėl ryškus.
+  * Šriftas - Segoe UI (%WINDIR%\Fonts\segoeui.ttf, kaip dx; nėra -
+    fonts\Roboto-Regular.ttf), rasterizuojamas TIKSLIAI piešimo dydžiu
+    (16 ir 13 px), TEXTURE_FILTER_POINT, be tarpų tarp raidžių
+    padidinimo; text() ir draw_icon() koordinates apvalina iki sveikų.
+  * Piktogramos: tools/mk-icons.py rasterizuoja kiekvieną dydžiui 14, 16,
+    20, 48, 64 px (icon_blobs[ICON_COUNT][ICON_NSIZES]); draw_icon() ima
+    tikslų dydį ir piešia 1:1.
+  * Be FLAG_MSAA_4X_HINT (sąsajai nereikia).
+
+2026-11-25  0.3.1 – tamsi antraštė, žymeklis nebemirga
+--------------------------------------------------------------------------
+
+  * Donato pastabos: „antraštė viršuje balta - kad būtų tokios pat
+    spalvos“, „privedus pelę prie ZXRTOS pelė mirga, prie meniu - ne“.
+  * Antraštė: winutil.c win_dark_titlebar() (kaip grotuvo
+    ui_dark_titlebar()): DwmSetWindowAttribute - DWMWA_USE_IMMERSIVE_DARK_MODE
+    (20, Windows 10 1809 - 19), DWMWA_CAPTION_COLOR = sąsajos fonas
+    #14171D ir DWMWA_TEXT_COLOR (Windows 11), SetWindowPos
+    SWP_FRAMECHANGED. Makefile: -ldwmapi.
+  * Žymeklis: anksčiau kiekvieno kadro pradžioje SetMouseCursor(rodyklė),
+    o virš mygtuko - SetMouseCursor(rankutė), todėl Windows žymeklis
+    mirgėjo (meniu pavadinimai rankutės nenustatė - ten nemirgėjo). Dabar
+    valdikliai tik pažymi norimą žymeklį, o SetMouseCursor() kviečiamas
+    vieną kartą kadro gale ir tik pasikeitus; meniu pavadinimams - irgi
+    rankutė.
+
+2026-11-25  0.3.0 – nauja sąsaja, ZXRTOS per meniu, visas ekranas
+--------------------------------------------------------------------------
+
+  * Donato prašymai: „padaryk normalų meniu, mygtukus gražius su
+    ikonomis, pažiūrėk kaip naudoja dx; kairėje zxeve nėra ikonos - dabar
+    atrodo kaip pigus demo“, „padaryk, kad užsikrautų per meniu zxrtos
+    rom“, „kad būtų full screen režimas“; klausimas „kodėl parašyta FT81x
+    ekranas išjungtas“.
+  * src/ui.c perrašytas (raygui nebenaudojamas, visi valdikliai - vienu
+    stiliumi, tamsi tema): meniu juosta Failas / Mašina / FT81x / Rodinys /
+    Pagalba su piktogramomis, varnelėmis ir klavišais; įrankių juosta -
+    piktogramų mygtukai su patarimais (atidaryti, ZXRTOS, reset, pauzė,
+    realus laikas, FT81x backend'as, ZX/FT81x PNG, konsolė, visas
+    ekranas); ZX ir FT81x kortelės su antraštėmis (dydis, mastelis);
+    būsenos juosta su piktogramomis (modelis, ROM, FT81x kadrai, SD,
+    kadrai/s, lietimo taškas, pranešimai); „Apie“ langas; ZX vaivorykštės
+    logotipas. Nauja: pauzė (F6), modelio keitimas meniu, FT81x / ZX
+    masteliai meniu, PNG su laiko žyme.
+  * Piktogramos - Lucide (ISC), kaip grotuve ir dx: res/lucide/*.svg (iš
+    grotuvo, dx ir lucide-static 0.469.0) -> tools/mk-icons.py ->
+    src/icons.c, include/icons.h (BALTOS PNG, spalva - piešiant);
+    „make icons“.
+  * Lango ikona: res/zxeve.rc - resursas „GLFW_ICON“ (GLFW jo ieško
+    registruodamas lango klasę), anksčiau antraštėje buvo tuščia ikona.
+  * Visas ekranas: F11 arba Rodinys -> Visas ekranas (langas be rėmelio per
+    monitorių), ZX ir FT81x padidinami vienodo aukščio ir centruojami.
+  * „FT81x ekranas išjungtas“ - tai ne klaida: standartinis 128 ROM FT81x
+    nekonfigūruoja (REG_PCLK = 0), kadro nėra. Dabar rodomas paaiškinimas
+    su piktograma ir nuoroda į ZXRTOS.
+  * ZXRTOS per meniu: Mašina -> ZXRTOS (ir mygtukas) - bin\zxrtos\
+    zxrtos-128.rom + zxrtos-sd.img; Mašina -> Įkelti ROM... (16 KB / 32 KB
+    arba ...-0.rom + ...-1.rom; šalia esantis zxrtos-sd.img - SD);
+    Mašina -> Standartinis ROM. Nustatymas rom_file (zxeve.conf),
+    emu_rom(), emu_zxrtos(), emu_rom_name(), win_open_rom().
+  * Makefile: bin/zxrtos/ iš ZXRTOS išleidimo (retro/zxrtos/build/
+    release); SD atvaizdas zxeve'ui - FT81X.ZXM perkeltas į MOD/,
+    AUTORUN.LUA į šaknį, todėl ZXRTOS iškart rodo vaizdą FT81x lange
+    (patikrinta per wine: „ZX Lua 4 / temp 21.5 C“ BT8XXEMU lange). SD
+    daromas tik jei jo nėra (ZXRTOS į jį rašo).
+  * make test praeina (wine).
+
+2026-11-25  0.2.1 – Windows'e lūždavo starte (zlog be Winsock)
+--------------------------------------------------------------------------
+
+  * Donato crashdb dump'as (temp/bin/crashdb/reports, make crash):
+    LŪŽIS libzlog.dll + 0xD1A2, skaitymas adresu 0x220 -
+    zlog_thread_del() thread.c:65 <- zlog_thread_new() <- _log() <-
+    trace("zlog paleistas"). Priežastis: zlog pirmame įraše kviečia
+    gethostname(), o Windows'e tai Winsock funkcija - be WSAStartup()
+    grąžina klaidą; zlog_event_new() nepavyksta, ir klaidos šakoje zlog
+    skaito a_thread->event->tid per NULL. Per wine nesimato (wine
+    gethostname() veikia ir be WSAStartup()). Grotuvas tą pačią problemą
+    turėjo ir sprendė taip pat (grotuvas/src/main.c).
+  * src/main.c: WSAStartup(2.2) prieš log_open(), WSACleanup() gale;
+    winsock2.h prieš windows.h. Makefile: -lws2_32.
+  * make test praeina (wine); natyvioje Windows - Donato patikra.
+  * Pastaba: pačiame lib/zlog lieka NULL klaida zlog_thread_del() (zc_debug
+    su a_thread->event == NULL) - nepakeista, laukia Donato sprendimo.
+
+2026-11-25  0.2.0 – lūžių ataskaitos (Crashpad, kaip dx)
+--------------------------------------------------------------------------
+
+  * Donato pranešimas: „paleidi bin ir nieko nevyksta“ - Windows'e
+    zxeve-start.log: „zlog paleistas“, po to LŪŽIS 0xC0000005 adresu
+    00007ff9674fd1a2 (kurioje DLL - iš adreso nežinoma). Prašymas:
+    „reikia naudoti crashdb kaip dx projekte lūžiams nustatyti“.
+  * src/crashrep.c, include/crashrep.h (iš dx): Crashpad (lib/crashpad,
+    crashpad_c.dll + crashpad_handler.exe system\ aplanke) - lūžus
+    crashdb\reports\<uuid>.dmp; anotacijos prog, version, build.
+    ZXEVE_CRASH_TEST=crash | dump - tyčinis lūžis / dump'as bandymui.
+  * log.c gaudyklė (kaip dx crash_filter()): į zxeve-start.log rašo
+    MODULĮ ir poslinkį („libzlog.dll + 0x1A2B“), prieigos pažeidimo
+    adresą ir veiksmą, parodo pranešimą (testų režime - ne), tada
+    iškviečia Crashpad'o filtrą. Pėdsakas papildomas (anksčiau
+    trace_open() jį perrašydavo), zlog lūžio metu neliečiamas (galėjo
+    lūžti jame pačiame). Pridėta msvcrt „netinkamo parametro“ gaudyklė
+    (_set_invalid_parameter_handler) - su dump'u.
+  * crash_handlers_install(dump) - nauja sąsaja; crash_set_quiet().
+  * Smulkesni starto žingsniai pėdsake: „nustatymai: skaitomi“, cfg_init,
+    cfg_parse_fp, „perskaityti“ - matysis, ar lūžta zlog, ar libconfuse.
+  * Makefile: zxeve.exe linkuojamas su simboliais į build/zxeve-sym.exe
+    (+ build/zxeve.map), į bin/ - nuskusta kopija; „make crash“
+    (tools/zxdump.py - dx tools/dxdump.py kopija; DUMP=, ARGS=--all,
+    ADDR=0x... - poslinkis iš zxeve-start.log); make deps tikrina
+    crashpad. Patikrinta per wine: tyčinis lūžis -> dump'as -> make crash
+    rodo crashrep.c:173 ir steką iki main(); make test praeina.
+  * bin/system/libzxemu.dll buvo pasenęs (0.17.2) - perkopijuotas 0.20.0.
+  * .gitignore: /*.log (Donato atsiųsti žurnalai), crashdb/.
+  * Priežastis Donato lūžio dar nežinoma - reikia naujo paleidimo su 0.2.0.
+
+2026-11-25  0.1.0 – pirma versija
+--------------------------------------------------------------------------
+
+  * Donato prašymas (retro/inbox.txt „libzxemu + BT8XXEMU – FT81x
+    emuliacijos planas ZXRTOS“; „kaip pvz naudoti proj/windows - logeris,
+    config ir t.t.“). Sprendimai: nauja programa proj/windows/1/zxeve
+    pagal grotuvo sandarą; patikra - wine, galutinė - natyvioje Windows.
+  * 0 etapas (bandymas) - test/bt_probe.c: bt8xxemu.dll per LoadLibraryW +
+    GetProcAddress (be bt8xxemu.lib), BT8XXEMU_defaults(FT813), Graphics
+    callback'as (be lango), ACTIVE, REG_ID = 0x7C, 800 x 480 laikai, DL
+    (CLEAR_COLOR_RGB, RECTS), kadras į PNG, pikselių patikra. Per wine:
+    BT8XXEMU 5.3.37 (API 20), REG_ID 0x7C, PNG teisingas. Pastaba:
+    VERTEX2II x - tik 9 bitai (iki 511), 800 px ekranui - VERTEX2F.
+  * Programa: raylib langas - ZX ekranas ir FT81x langas greta, raygui
+    juosta (Atidaryti, Reset, FT81x backend'as BT8XXEMU / builtin, Realus
+    laikas, FT81x PNG, Konsolė), būsenos juosta, Roboto šriftas su LT
+    raidėmis, klaviatūra (zxe_pc_key), pelė FT81x lange - lietimas
+    (zxe_ft81x_touch), garsas (libzxemu žiedinis buferis -> raylib
+    AudioStream; kadrus diktuoja garsas), failų tempimas, failo langas.
+  * log.c - zlog (zxeve.log, 1 MB x 3), zxeve-start.log pėdsakas, spalvota
+    konsolė (WriteConsoleW, UTF-8), lūžių gaudyklė, die(). libzxemu ir
+    raylib žurnalai nukreipti į jį.
+  * config.c - zxeve.conf šalia .exe (libconfuse): modelis, ROM'ai, FT81x
+    ir backend'as, SPI 0xBF, SD atvaizdas, VS1053, LM75, realus laikas,
+    garsas, masteliai, konsolė, paskutinis failas. Rašoma per laikiną
+    failą ir MoveFileExW.
+  * Makefile - kaip grotuvo: system/ DLL (libzxemu, libspectrum, libz,
+    raylib, libconfuse, libzlog, libwinpthread, bt8xxemu) + generuojamas
+    system.manifest, MANIFEST_CHECK, deps, dll, debug (zxeve-debug.exe),
+    probe, test, tar, git, icon (tools/mk-icon.py).
+  * make test (wine + xvfb-run): probe, dll, zxeve --builtin (ZX ir lango
+    vaizdai), zxeve su BT8XXEMU ir ZXRTOS 13 etapu (rinkama „video“ ->
+    FT81x kadras tikrinamas zxrtos/tools/pngcheck.py kaip check-s13).
+    Visi praeina.
+  * Reikia libzxemu >= 0.20.0 (zxe_config.ft81x_backend, zxe_ft81x_touch,
+    zxe_ft81x_frame_seq).

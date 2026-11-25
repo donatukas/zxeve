@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- Sugeneruota Makefile - ranka netaisyti. -->
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <assemblyIdentity type="win32" name="system" version="1.0.0.0" processorArchitecture="amd64"/>
+  <file name="libzxemu.dll"/>
+  <file name="libspectrum-9.dll"/>
+  <file name="libz.dll"/>
+  <file name="libraylib.dll"/>
+  <file name="libconfuse.dll"/>
+  <file name="libzlog.dll"/>
+  <file name="libwinpthread-1.dll"/>
+  <file name="bt8xxemu.dll"/>
+  <file name="crashpad_c.dll"/>
+</assembly>
