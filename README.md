@@ -1,103 +1,111 @@
 # zxeve
 
-ZX Spectrum 128 emuliatorius Windows sistemai su FT81x EVE ekranu:
-[libzxemu](../../../lib/libzxemu) (Z80, ULA, SD, I2C, VS1053) ir Bridgetek
-BT8XXEMU (FT813 su koprocesoriumi, ROM šriftais ir lietimu). Skirtas ZXRTOS
-FT81x darbui: ZX ekranas ir FT81x langas greta, pelė FT81x lange - lietimas.
+ZX Spectrum 128 emuliatorius Windows sistemai su **FT81x EVE** ekranu
+(FT813, 800 × 480): ZX ekranas ir FT81x langas greta, pelė FT81x lange -
+lietimas. Skirtas ZXRTOS (FreeRTOS ROM ZX Spectrum 128) FT81x darbui, bet
+tinka ir įprastoms ZX programoms bei žaidimams.
 
-Kryžmiškai kompiliuojamas iš Linux su MinGW-w64; sandara - kaip grotuvo
-(zlog žurnalas, libconfuse nustatymai, visos DLL aplanke `system\`).
+![zxeve su ZXRTOS](docs/zxeve.png)
 
-## Kompiliavimas
+Tai **paruošta programa** - nieko kompiliuoti nereikia.
 
-```sh
-make -j4      # bin/zxeve.exe + system/ DLL, roms/, fonts/, nustatymai
-make run      # per wine
-make test     # 0 etapo bandymas, DLL patikra, GUI testai (wine + Xvfb)
-make debug    # bin/zxeve-debug.exe - konsolinis variantas
-make dist     # dist/zxeve-<v>.tar.gz ir dist/zxeve-<v>-win64.zip (Windows paketas)
-make help
-```
+## Paleidimas
 
-Priklausomybės - `../../../lib` (`make deps` parodo, ko trūksta ir kaip
-pasigaminti): libzxemu (>= 0.21.0), libspectrum, zlib, bt8xxemu
-(github.com/Bridgetek/EVE-Emulator), raylib, raygui, libconfuse, zlog, crashpad.
+1. Atsisiųskite (žalias mygtukas **Code → Download ZIP**) ir išpakuokite
+   bet kur, arba `git clone`.
+2. Paleiskite **`zxeve.exe`**.
 
-## Paleidimas Windows
+Reikia **Windows 10 / 11 x64**. FT81x su koprocesoriumi (Bridgetek
+BT8XXEMU, `system\bt8xxemu.dll`) dar reikia **Microsoft Visual C++
+2015-2022 x64 runtime** -
+[vc_redist.x64.exe](https://aka.ms/vs/17/release/vc_redist.x64.exe). Be jo
+FT81x galima perjungti į paprastesnį imitatorių: mygtukas **BT8XXEMU →
+builtin** arba meniu **FT81x → builtin**.
 
-`bin/` katalogą nukopijuokite į Windows. bt8xxemu.dll reikia Microsoft
-Visual C++ 2015-2022 x64 runtime (`vc_redist.x64.exe`). Be jo FT81x
-BT8XXEMU backend'as nepasileis - mygtuku „FT81x: builtin“ galima perjungti į
-libzxemu imitatorių (be koprocesoriaus).
+`zxeve-debug.exe` - tas pats, tik su konsole (matyti visas žurnalas).
 
-```
-zxeve.exe [failas] [--conf F] [--no-audio] [--builtin]
-```
+## Ką galima atidaryti
 
-Failai: `.tap .tzx` (juosta, autoload), `.z80 .sna .szx`, `.dsk .trd .scl`,
-`.img` (SD kortelė - mašina perkuriama). Galima tempti į langą.
+Meniu **Failas → Atidaryti** (F3) arba tiesiog nutempkite failą į langą:
 
-ZXRTOS: į `zxeve.conf` įrašykite `roms` (katalogas su ZXRTOS
-`128-0.rom` = zxrtos-0.rom ir `128-1.rom` = zxrtos-1.rom) ir `sd_image`.
+| Failai | Kas |
+|---|---|
+| `.tap` `.tzx` | juosta - įsikrauna akimirksniu (ir savi įkėlėjai - ROM LD-BYTES kopijos) |
+| `.z80` `.sna` `.szx` | būsenos (snapshot) |
+| `.dsk` `.trd` `.scl` | diskai (+3, TR-DOS) |
+| `.img` | SD kortelės atvaizdas |
 
-## Sąsaja
+## ZXRTOS
 
-Meniu juosta (Failas, Mašina, FT81x, Rodinys, Pagalba), įrankių juosta su
-Lucide piktogramomis ir patarimais, ZX ir FT81x kortelės, būsenos juosta.
-Klavišai: F3 - atidaryti, F5 - reset, F6 - pauzė, F7 - garsas, F9 - tik ZX per visą
-ekraną, F10 - tik FT81x per visą ekraną, F11 - visa programa per ekraną
-(tas pats klavišas arba Esc - atgal; taip pat kortelės antraštės mygtukas);
-visa kita klaviatūra - Spectrum'ui. Pelė FT81x lange - lietimas
-(BT8XXEMU).
+**Mašina → ZXRTOS** (arba mygtukas **ZXRTOS** įrankių juostoje) įkelia
+`zxrtos\zxrtos-128.rom` ir SD atvaizdą `zxrtos\zxrtos-sd.img`: ZXRTOS 1.0.0
+paleidžia ZX Lua, o AUTORUN.LUA iš karto rodo vaizdą FT81x lange ir groja
+AY. Dar kartą paspaudus mygtuką - grįžtama į įprastą ZX Spectrum. Kitas ROM -
+**Mašina → Įkelti ROM...**
 
-**ZXRTOS:** Mašina → ZXRTOS (arba mygtukas „ZXRTOS“) įkelia
-`zxrtos\zxrtos-128.rom` ir `zxrtos\zxrtos-sd.img` - SD su FT81x
-tvarkykle ir AUTORUN.LUA, todėl FT81x lange iškart vaizdas. Kitas ROM -
-Mašina → Įkelti ROM...
+## Klavišai
 
-Piktogramos - `res/lucide/*.svg` → `make icons` → `src/icons.c`.
+| Klavišas | Veiksmas |
+|---|---|
+| F3 | atidaryti failą |
+| F5 | reset |
+| F6 | pauzė / tęsti |
+| F7 | garsas įjungti / išjungti |
+| F9 | tik ZX Spectrum per visą ekraną |
+| F10 | tik FT81x EVE per visą ekraną |
+| F11 | visa programa per visą ekraną |
+| Esc | iš viso ekrano režimo - atgal į langą |
+
+Visa kita klaviatūra - Spectrum'ui (Esc lange - Spectrum EDIT). Pelė FT81x
+lange - lietimas (BT8XXEMU).
+
+## Meniu
+
+- **Failas** - atidaryti, ZX ekrano ir FT81x kadro nuotraukos (PNG), išeiti.
+- **Mašina** - ZXRTOS / savas / standartinis ROM, reset, pauzė, realus
+  laikas, garsas, greitas juostos įkėlimas, modelis: 48K, 128K, +2, +2A, +3,
+  Pentagon 128.
+- **FT81x** - prijungtas ar ne, BT8XXEMU arba builtin, mastelis.
+- **Rodinys** - visas ekranas (visa programa, tik ZX, tik FT81x), ZX
+  mastelis, starto efektas, derinimo konsolė.
+- **Pagalba → Apie** - visų dalių versijos.
 
 ## Nustatymai
 
-`zxeve.conf` šalia `zxeve.exe` - aprašas `conf/zxeve.conf`. Žurnalas -
-`zxeve.log` (konfigūracija `zlog.conf`), starto pėdsakas - `zxeve-start.log`.
+`zxeve.conf` šalia `zxeve.exe` (su aprašais): modelis, ROM, FT81x
+backend'as, SD atvaizdas, garsas, masteliai ir kt. Programa jį perrašo
+baigdama darbą.
 
-## Lūžiai (Crashpad)
+Pentagon 128 naudoja Sinclair 128K ROM (`roms\128p-*.rom`). TR-DOS ROM
+(`trdos.rom`) nepridėtas - jis nėra laisvai platinamas; savo kopiją įdėkite
+į `roms\`.
 
-Lūžus programa į `zxeve-start.log` įrašo modulį ir poslinkį
-(`LŪŽIS: ... zxeve.exe + 0x26E2`), parodo pranešimą, o Crashpad
-(`system\crashpad_handler.exe`) įrašo `crashdb\reports\<uuid>.dmp`.
-Linux'e:
+## Jei kas nors neveikia
 
-```sh
-make crash DUMP=~/is-windows.dmp   # išimtis, modulis, stekas su eilutėmis
-make crash ADDR=0x26E2             # zxeve.exe poslinkis -> funkcija:eilutė
+- **Nepasileidžia / lūžta** - šalia `zxeve.exe` atsiranda
+  `zxeve-start.log` (starto žingsniai, lūžio vieta) ir
+  `crashdb\reports\*.dmp` (Crashpad lūžio ataskaita). Juos atsiųskite.
+- **FT81x klaida paleidžiant** - įdiekite vc_redist.x64.exe arba
+  perjunkite į builtin.
+- Žurnalas - `zxeve.log`; plačiau - `zxeve-debug.exe` konsolėje.
+
+## Turinys
+
 ```
-
-Dump'as nagrinėjamas tik su tuo pačiu sukompiliavimu (`build/zxeve-sym.exe`).
-Bandymui Windows'e: `set ZXEVE_CRASH_TEST=crash` ir `zxeve.exe`.
-
-## Testų režimas
-
+zxeve.exe, zxeve-debug.exe   programa (be konsolės / su konsole)
+zxeve.conf, zlog.conf        nustatymai, žurnalo konfigūracija
+system\                      bibliotekos (DLL) ir Crashpad
+roms\                        ZX Spectrum ROM'ai
+zxrtos\                      ZXRTOS 1.0.0: ROM ir SD atvaizdas
+fonts\                       šriftas (Roboto)
+LICENSES\                    trečiųjų šalių licencijos
+CHANGELOG.txt                pakeitimai
 ```
-zxeve.exe --test-frames N [--screenshot F.png] [--ftdump F.png]
-          [--zxdump F.png] [--touch KADRAS X Y] [--type KADRAS TEKSTAS]
-```
-
-Po N kadrų įrašomi failai ir programa baigiasi (0 - gerai, 2 - klaida), be
-modalinių langų.
-
-## Apribojimai
-
-- BT8XXEMU dirba realiu laiku savo gijose - FT81x kadrai nedeterministiniai
-  (patikros - PNG su tolerancija, libzxemu `ftwait`).
-- libzxemu failus atveria per `fopen` (ANSI) - keliai su ne ASCII
-  raidėmis gali neveikti.
-- FT81x INT - IN bitas 5 (libzxemu 0.20.0 pasiūlymas).
 
 ## Licencijos
 
-zxeve - GPL-3.0-or-later (kaip libzxemu). BT8XXEMU - Bridgetek nuosavybė,
-nemokama licencija EVE programų kūrimui (DLL galima platinti su programa;
-suderinamumas su GPL - pasitikslinti). Roboto šriftas - Apache 2.0.
-Spectrum ROM'ai - žr. `roms/README.copyright`.
+zxeve ir libzxemu - GPL-3.0-or-later, (c) 2026 Donatas. Bridgetek BT8XXEMU
+(`system\bt8xxemu.dll`) - Bridgetek nuosavybė, licencija leidžia platinti
+kartu su programa (`LICENSES\bt8xxemu-LICENSE.md`). Spectrum ROM'ai - (c)
+Amstrad, platinami su jų leidimu (`roms\README.copyright`). Crashpad -
+Apache 2.0, Roboto - Apache 2.0, piktogramos - Lucide (ISC), raylib - zlib.

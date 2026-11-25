@@ -1,6 +1,20 @@
 zxeve – pakeitimų žurnalas
 ==========================
 
+2026-11-26  0.4.4 – README naudotojui (GitHub, dist)
+--------------------------------------------------------------------------
+
+  * Donatas: „veikia; aprašyme nereikia kompiliavimo, nes tik bin“ (GitHub
+    repo donatukas/zxeve - paruošta programa, ~/github/push.sh).
+  * res/README-bin.md - naudotojo aprašas be kompiliavimo: paleidimas,
+    reikalavimai (Windows 10/11 x64, vc_redist dėl BT8XXEMU), failai,
+    ZXRTOS, klavišai, meniu, nustatymai, ką daryti lūžus, turinys,
+    licencijos; res/docs/zxeve.png - ekrano nuotrauka (ZXRTOS + FT81x).
+  * ~/github/push.sh ir „make dist“ deda jį kaip README.md (su docs/);
+    projekto README.md (su kompiliavimu) - tik šaltiniuose.
+  * push.sh: --ssh / --https (būdo keitimas, SSH raktas, origin), aiškus
+    paaiškinimas, kai GitHub atmeta slaptažodį.
+
 2026-11-25  0.4.4 – „Apie“ šriftas šiek tiek didesnis
 --------------------------------------------------------------------------
 
