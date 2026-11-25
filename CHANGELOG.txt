@@ -12,6 +12,10 @@ zxeve – pakeitimų žurnalas
     licencijos; res/docs/zxeve.png - ekrano nuotrauka (ZXRTOS + FT81x).
   * ~/github/push.sh ir „make dist“ deda jį kaip README.md (su docs/);
     projekto README.md (su kompiliavimu) - tik šaltiniuose.
+  * bin/zxrtos/README.md - res/zxrtos-README.md: trumpas ZXRTOS aprašas
+    naudotojui (failai, paleidimas zxeve, SD turinys, ZX Lua kalba ir
+    moduliai, licencijos) be kūrimo etapų lentelės ir „(N etapas)“
+    skyrių (Donatas: „planus / etapus pašalink ZXRTOS aprašyme“).
   * push.sh: --ssh / --https (būdo keitimas, SSH raktas, origin), aiškus
     paaiškinimas, kai GitHub atmeta slaptažodį.
 
